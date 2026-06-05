@@ -106,8 +106,11 @@
     <thead>
         <tr>
             <th class="text-center">STT</th>
-            <th>Tên lớp học phầnc</th>
+            <th>Tên lớp học phần</th>
             <th>Mã học phần</th>
+            <th>Tuần học</th>
+            <th>Lịch học</th>
+            <th>Giảng viên</th>
             <th class="text-center">DSSV</th>
         </tr>
     </thead>
@@ -136,7 +139,7 @@
 </div>
 
 <script src="database.js"></script>
-
+<script src="i4hocphan.js"></script>
 <script>
     // Dòng 'const database = [];' cũ đã được xóa bỏ hoàn toàn vì dữ liệu được load trực tiếp từ file database.js phía trên
 
@@ -159,9 +162,15 @@
             }
             
             if (!daTonTai) {
+                // TỰ ĐỘNG ĐỐI CHIẾU THÊM THÔNG TIN TỪ FILE SCHEDULE.JS SANG
+                let lichBoSung = typeof scheduleData !== 'undefined' ? scheduleData.find(s => s.maLHP.replace(/\./g, '') === maChuanHoaItem) : null;
+                
                 uniqueLHP.push({
                     maLHP: item.maLHP,
-                    tenMon: item.tenMon
+                    tenMon: lichBoSung ? lichBoSung.tenMon : item.tenMon,
+                    tuanHoc: lichBoSung ? lichBoSung.tuanHoc : "-",
+                    lichHoc: lichBoSung ? lichBoSung.lichHoc : "-",
+                    giangVien: lichBoSung ? lichBoSung.giangVien : "-"
                 });
             }
         }
@@ -172,6 +181,9 @@
                 <td class="text-center">${i + 1}</td>
                 <td>${uniqueLHP[i].tenMon}</td>
                 <td>${uniqueLHP[i].maLHP}</td>
+                <td>${uniqueLHP[i].tuanHoc}</td>
+                <td>${uniqueLHP[i].lichHoc}</td>
+                <td>${uniqueLHP[i].giangVien}</td>
                 <td class="text-center"><button class="btn-view" onclick="viewDSSV('${uniqueLHP[i].maLHP}', '${uniqueLHP[i].tenMon}')">XEM</button></td>
             `;
             tbody.appendChild(tr);
@@ -189,10 +201,14 @@
         for (let i = 1; i < tr.length; i++) {
             let tdMonHoc = tr[i].getElementsByTagName("td")[1];
             let tdMaLHP = tr[i].getElementsByTagName("td")[2];
+            let tdLichHoc = tr[i].getElementsByTagName("td")[4];
+            let tdGiangVien = tr[i].getElementsByTagName("td")[5];
             
             if (tdMonHoc && tdMaLHP) {
                 let txtMonHoc = tdMonHoc.textContent || tdMonHoc.innerText;
                 let txtMaLHP = tdMaLHP.textContent || tdMaLHP.innerText;
+                let txtLichHoc = tdLichHoc ? (tdLichHoc.textContent || tdLichHoc.innerText) : "";
+                let txtGiangVien = tdGiangVien ? (tdGiangVien.textContent || tdGiangVien.innerText) : "";
                 let txtMaLHPChuanHoa = txtMaLHP.replace(/\./g, '');
                 
                 let matchesMSSV = false;
@@ -204,7 +220,12 @@
                     }
                 }
                 
-                if (txtMonHoc.toUpperCase().indexOf(filter) > -1 || txtMaLHPChuanHoa.toUpperCase().indexOf(filter) > -1 || matchesMSSV) {
+                // Hỗ trợ tìm kiếm thông minh theo cả lịch học và tên giảng viên mới thêm
+                if (txtMonHoc.toUpperCase().indexOf(filter) > -1 || 
+                    txtMaLHPChuanHoa.toUpperCase().indexOf(filter) > -1 || 
+                    txtLichHoc.toUpperCase().indexOf(filter) > -1 || 
+                    txtGiangVien.toUpperCase().indexOf(filter) > -1 || 
+                    matchesMSSV) {
                     tr[i].style.display = "";
                     tr[i].getElementsByTagName("td")[0].textContent = currentSTT++;
                 } else {
@@ -268,6 +289,5 @@
 
     window.onload = renderLHPTable;
 </script>
-    <script src="database.js"></script>
 </body>
 </html>
