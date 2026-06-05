@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VNY | DUT LỚP HỌC PHẦN</title>
+    <title>VNY | DUT - LỚP HỌC PHẦN</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,7 +28,6 @@
             box-sizing: border-box;
             border: 1px solid #000000;
             margin-bottom: 20px;
-            
         }
         .search-box::placeholder {
             color: #666;
@@ -101,7 +100,7 @@
 <h1>VNY | DUT - LỚP HỌC PHẦN</h1>
 <hr>
 
-<input type="text" id="searchInput" class="search-box" placeholder="Tìm kiếm theo tên môn học hoặc mã lớp học phần..." onkeyup="filterTable()">
+<input type="text" id="searchInput" class="search-box" placeholder="Tìm kiếm theo tên môn học, mã lớp hoặc MSSV..." onkeyup="filterTable()">
 
 <table id="lhpTable">
     <thead>
@@ -137,7 +136,6 @@
 </div>
 
 <script>
-    // Giả sử database trộn lẫn cả 2 loại mã lhp có dấu chấm và không có dấu chấm để test
     const database = [
   {
     "maLHP": "10110932521yy92",
@@ -81243,8 +81241,6 @@
         const uniqueLHP = [];
         for (let i = 0; i < database.length; i++) {
             let item = database[i];
-            
-            // Chuẩn hóa mã bằng cách xóa hết dấu chấm để kiểm tra trùng lặp
             let maChuanHoaItem = item.maLHP.replace(/\./g, '');
             let daTonTai = false;
             
@@ -81278,8 +81274,6 @@
 
     function filterTable() {
         const input = document.getElementById("searchInput");
-        
-        // Chuẩn hóa luôn cả chuỗi do người dùng nhập vào ô tìm kiếm (xóa dấu chấm)
         const filter = input.value.toUpperCase().replace(/\./g, '');
         const table = document.getElementById("lhpTable");
         const tr = table.getElementsByTagName("tr");
@@ -81293,11 +81287,18 @@
             if (tdMonHoc && tdMaLHP) {
                 let txtMonHoc = tdMonHoc.textContent || tdMonHoc.innerText;
                 let txtMaLHP = tdMaLHP.textContent || tdMaLHP.innerText;
-                
-                // Khi so sánh mã LHP ngoài bảng, cũng xóa dấu chấm đi để đối chiếu với ô tìm kiếm
                 let txtMaLHPChuanHoa = txtMaLHP.replace(/\./g, '');
                 
-                if (txtMonHoc.toUpperCase().indexOf(filter) > -1 || txtMaLHPChuanHoa.toUpperCase().indexOf(filter) > -1) {
+                let matchesMSSV = false;
+                for (let j = 0; j < database.length; j++) {
+                    let dbMaChuanHoa = database[j].maLHP.replace(/\./g, '');
+                    if (dbMaChuanHoa === txtMaLHPChuanHoa && database[j].mssv.toUpperCase().indexOf(filter) > -1) {
+                        matchesMSSV = true;
+                        break;
+                    }
+                }
+                
+                if (txtMonHoc.toUpperCase().indexOf(filter) > -1 || txtMaLHPChuanHoa.toUpperCase().indexOf(filter) > -1 || matchesMSSV) {
                     tr[i].style.display = "";
                     tr[i].getElementsByTagName("td")[0].textContent = currentSTT++;
                 } else {
@@ -81311,7 +81312,6 @@
         document.getElementById("modalTitle").innerText = `DANH SÁCH SINH VIÊN PHÒNG THI - MÔN: ` + tenMon.toUpperCase();
         document.getElementById("modalSubTitle").innerText = `Mã LHP học phần: ` + maLHP;
 
-        // Chuẩn hóa mã LHP được chọn để gom toàn bộ sinh viên có mã tương đương (bất kể dấu chấm)
         let maLHPChuanHoaGoc = maLHP.replace(/\./g, '');
 
         let students = [];
