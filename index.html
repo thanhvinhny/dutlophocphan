@@ -11,10 +11,35 @@
             background-color: #ffffff;
             color: #000000;
         }
+        
+        .btn-home-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            cursor: pointer;
+            text-decoration: none;
+            color: #000000;
+            transition: all 0.2s ease;
+        }
+        .btn-home-back:hover {
+            background-color: #f0f0f0;
+        }
+
         h1 {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
+            padding-left: 50px;
+            min-height: 35px;
+            display: flex;
+            align-items: center;
         }
         hr {
             border: 0;
@@ -93,9 +118,80 @@
             cursor: pointer;
             font-weight: bold;
         }
+
+        .notice-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .notice-box {
+            background-color: #ffffff;
+            padding: 25px;
+            border: 2px solid #000000;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+        .notice-title {
+            margin-top: 0;
+            color: #bd1c1c;
+            font-size: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .notice-body {
+            margin: 15px 0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        .notice-footer {
+            text-align: right;
+            margin-top: 15px;
+            font-style: italic;
+            color: #555;
+            font-size: 13px;
+        }
+        .btn-close-notice {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        .btn-close-notice:hover {
+            background-color: #333333;
+        }
     </style>
 </head>
 <body>
+
+<div id="welcomeNotice" class="notice-overlay">
+    <div class="notice-box">
+        <h3 class="notice-title">THÔNG BÁO</h3>
+        <div class="notice-body">
+            <ul>
+                <li>Dữ liệu website chỉ để tham khảo, có thể không chính xác theo thời gian thực.</li>
+            </ul>
+        </div>
+        <button class="btn-close-notice" onclick="closeNotice()">Tôi đã hiểu</button>
+        <div class="notice-footer">@vny</div>
+    </div>
+</div>
+
+<a href="https://thanhvinhny.github.io/dut-superapp/" class="btn-home-back" title="Quay lại Dut SuperApp">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+</a>
 
 <h1>VNY | DUT - LỚP HỌC PHẦN</h1>
 <hr>
@@ -141,7 +237,10 @@
 <script src="database.js"></script>
 <script src="i4hocphan.js"></script>
 <script>
-    // Dòng 'const database = [];' cũ đã được xóa bỏ hoàn toàn vì dữ liệu được load trực tiếp từ file database.js phía trên
+    // Hàm đóng popup thông báo khi bấm nút "Tôi đã hiểu"
+    function closeNotice() {
+        document.getElementById("welcomeNotice").style.display = "none";
+    }
 
     function renderLHPTable() {
         const tbody = document.querySelector("#lhpTable tbody");
@@ -162,7 +261,6 @@
             }
             
             if (!daTonTai) {
-                // TỰ ĐỘNG ĐỐI CHIẾU THÊM THÔNG TIN TỪ FILE SCHEDULE.JS SANG
                 let lichBoSung = typeof scheduleData !== 'undefined' ? scheduleData.find(s => s.maLHP.replace(/\./g, '') === maChuanHoaItem) : null;
                 
                 uniqueLHP.push({
@@ -220,7 +318,6 @@
                     }
                 }
                 
-                // Hỗ trợ tìm kiếm thông minh theo cả lịch học và tên giảng viên mới thêm
                 if (txtMonHoc.toUpperCase().indexOf(filter) > -1 || 
                     txtMaLHPChuanHoa.toUpperCase().indexOf(filter) > -1 || 
                     txtLichHoc.toUpperCase().indexOf(filter) > -1 || 
